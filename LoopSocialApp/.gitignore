@@ -1,0 +1,14 @@
+# Ignore Visual Studio and build artifacts
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.db
+*.pdb
+*.log
+*.tlog
+*.tmp
+*.ide
+*.bak
