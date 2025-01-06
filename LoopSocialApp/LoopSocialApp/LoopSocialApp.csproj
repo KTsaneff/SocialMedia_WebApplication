@@ -20,8 +20,4 @@
     <ProjectReference Include="..\LoopSocialApp.Data\LoopSocialApp.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
-
 </Project>
