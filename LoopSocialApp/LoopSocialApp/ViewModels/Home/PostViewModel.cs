@@ -3,6 +3,6 @@
     public class PostViewModel
     {
         public string Content { get; set; }
-        public string ImageUrl { get; set; }
+        public IFormFile Image { get; set; }
     }
 }
