@@ -75,5 +75,34 @@ namespace LoopSocialApp.Controllers
             //Redirect to home page
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> TogglePostLike(PostLikeViewModel model)
+        {
+            //Hardcode existing user
+            var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
+
+            //check if user has already liked the post
+            var existingLike = await _context.Likes
+                .FirstOrDefaultAsync(n => n.ApplicationUserId == userId && n.PostId == model.PostId);
+
+            if (existingLike != null)
+            {
+                _context.Likes.Remove(existingLike);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var newLike = new Like
+                {
+                    ApplicationUserId = userId,
+                    PostId = model.PostId
+                };
+                await _context.Likes.AddAsync(newLike);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }
