@@ -14,14 +14,31 @@ namespace LoopSocialApp.Data
         public DbSet<Post> Posts { get; set; } = null!;
         public DbSet<ApplicationUser> ApplicationUsers { get; set; } = null!;
 
+        public DbSet<Like> Likes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(builder);
-
             builder.Entity<ApplicationUser>()
                 .HasMany(u => u.Posts)
                 .WithOne(p => p.ApplicationUser)
                 .HasForeignKey(p => p.ApplicationUserId);
+
+            builder.Entity<Like>()
+                .HasKey(l => new { l.PostId, l.ApplicationUserId });
+
+            builder.Entity<Like>()
+                .HasOne(l => l.Post)
+                .WithMany(p => p.Likes)
+                .HasForeignKey(l => l.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Like>()
+                .HasOne(l => l.ApplicationUser)
+                .WithMany(u => u.Likes)
+                .HasForeignKey(l => l.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            base.OnModelCreating(builder);
         }
     }
 }

@@ -19,6 +19,9 @@ namespace LoopSocialApp.Data.DataModels
 
         public string ApplicationUserId { get; set; } = null!;
 
+        //Navigation properties
         public virtual ApplicationUser ApplicationUser { get; set; } = null!;
+
+        public virtual ICollection<Like> Likes { get; set; } = new List<Like>();
     }
 }

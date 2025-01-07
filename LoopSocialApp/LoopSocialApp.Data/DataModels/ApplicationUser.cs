@@ -13,6 +13,8 @@ namespace LoopSocialApp.Data.DataModels
 
         public string? ProfileImageUrl { get; set; }
 
+        //Navigation properties
         public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+        public virtual ICollection<Like> Likes { get; set; } = new List<Like>();
     }
 }
