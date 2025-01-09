@@ -105,5 +105,27 @@ namespace LoopSocialApp.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddPostComment(PostCommentViewModel model)
+        {
+            //Hardcode existing user
+            var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
+
+            //Create a comment object
+            var newComment = new Comment
+            {
+                Content = model.Content,
+                DateCreated = DateTime.UtcNow,
+                DateUpdated = DateTime.UtcNow,
+                ApplicationUserId = userId,
+                PostId = model.PostId
+            };
+
+            await _context.Comments.AddAsync(newComment);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
     }
 }
