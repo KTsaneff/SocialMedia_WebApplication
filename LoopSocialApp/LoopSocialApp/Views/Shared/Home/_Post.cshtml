@@ -78,9 +78,9 @@
             <form asp-controller="Home" asp-action="TogglePostLike">
                 <input type="hidden" name="postId" value="@Model.Id" />
                 <button type="submit"
-                        class="button-icon @(Model.Likes.Any(n => n.ApplicationUserId == "00c185e1-7e41-4a01-9643-28ed5c8233ba") ? "text-red-500 bg-red-100" : "")">
+                class="button-icon @(Model.Likes.Any(n => n.ApplicationUserId == "00c185e1-7e41-4a01-9643-28ed5c8233ba") ? "text-red-500 bg-red-100" : "")">
                     <ion-icon class="text-lg"
-                              name="@(Model.Likes.Any(n => n.ApplicationUserId == "00c185e1-7e41-4a01-9643-28ed5c8233ba") ? "heart" : "heart-outline")">
+                    name="@(Model.Likes.Any(n => n.ApplicationUserId == "00c185e1-7e41-4a01-9643-28ed5c8233ba") ? "heart" : "heart-outline")">
                     </ion-icon>
                 </button>
             </form>
@@ -107,7 +107,7 @@
     <div>
         <div class="p-2.5 border-t border-gray-100 font-normal space-y-3 relative">
 
-            @foreach(var comment in Model.Comments)
+            @foreach(var comment in Model.Comments.OrderByDescending(c => c.DateCreated).Take(3))
             {
                 TimeSpan commentTimeSpanSincePosted = DateTime.UtcNow.Subtract(comment.DateCreated);
                 string commentDisplayTime = commentTimeSpanSincePosted switch
@@ -135,6 +135,13 @@
                             @comment.Content
                         </p>
                     </div>
+                </div>
+            }
+
+            @if(Model.Comments.Count >= 3)
+            {
+                <div class="p-1.5">
+                    <a> Show all comments</a>
                 </div>
             }
 
