@@ -128,5 +128,20 @@ namespace LoopSocialApp.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> RemovePostComment(RemoveCommentViewModel model)
+        {
+            var comment = await _context.Comments
+                .FirstOrDefaultAsync(n => n.Id == model.CommentId);
+
+            if(comment != null)
+            {
+                _context.Comments.Remove(comment);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }
