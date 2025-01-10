@@ -22,6 +22,7 @@ namespace LoopSocialApp.Controllers
             var allPosts = await _context.Posts
                 .Include(n => n.ApplicationUser)
                 .Include(n => n.Likes)
+                .Include(n => n.Comments).ThenInclude(n => n.ApplicationUser)
                 .OrderByDescending(n => n.DateCreated)
                 .ToListAsync();
 

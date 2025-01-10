@@ -92,7 +92,7 @@
             <a class="button-icon">
                 <ion-icon class="text-lg" name="chatbubble-ellipses-outline"></ion-icon>
             </a>
-            <a href="#">3</a>
+            <a href="#">@Model.Comments.Count</a>
         </div>
 
         <div class="ml-auto"></div>
@@ -105,10 +105,44 @@
 
     @* Add Comment Section *@
     <div>
+        <div class="p-2.5 border-t border-gray-100 font-normal space-y-3 relative">
+
+            @foreach(var comment in Model.Comments)
+            {
+                TimeSpan commentTimeSpanSincePosted = DateTime.UtcNow.Subtract(comment.DateCreated);
+                string commentDisplayTime = commentTimeSpanSincePosted switch
+                {
+                    var t when t.TotalDays > 365 => $"{(int)t.TotalDays / 365}y ago",
+                    var t when t.TotalDays >= 62 => $"{(int)t.TotalDays / 31}months ago",
+                    var t when t.TotalDays >= 1 => $"{(int)t.TotalDays}d ago",
+                    var t when t.TotalHours >= 1 => $"{(int)t.TotalHours}h ago",
+                    var t when t.TotalMinutes >= 1 => $"{(int)t.TotalMinutes}m ago",
+                    _ => "Just now"
+                };
+
+                <div class="flex items-start gap-3 relative">
+                    <a>
+                        <img src="@(comment.ApplicationUser.ProfileImageUrl ?? "~/images/avatar/user.png")" class="w-6 h-6 mt-1 rounded-full" />
+                    </a>
+                    <div class="flex-1">
+                        <div class="flex justify-content-between">
+                            <a class="text-black font-medium inline-block flex-grow">
+                                @comment.ApplicationUser.FullName
+                            </a>
+                            <small> @commentDisplayTime</small>
+                        </div>
+                        <p class="mt-0.5">
+                            @comment.Content
+                        </p>
+                    </div>
+                </div>
+            }
+
+        </div>
+
         <form asp-controller="Home" asp-action="AddPostComment">
             <div class="sm:px-4 sm:py-3 p-2 border-t border-gray-100 flex items-center gap-1">
                 <img src="~/images/avatar/user.png" class="w-6 h-6 rounded-full" />
-
 
                 <input type="hidden" name="postId" value="@Model.Id" />
 
