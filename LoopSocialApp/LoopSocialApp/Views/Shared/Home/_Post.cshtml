@@ -12,6 +12,9 @@
         var t when t.TotalMinutes >= 1 => $"{(int)t.TotalMinutes}m ago",
         _ => "Just now"
     };
+
+    bool isFavorited = Model.Favorites.Any(n => n.ApplicationUserId == "00c185e1-7e41-4a01-9643-28ed5c8233ba");
+    bool isLiked = Model.Likes.Any(n => n.ApplicationUserId == "00c185e1-7e41-4a01-9643-28ed5c8233ba");
 }
 
 <div class="bg-white rounded-xl shadow-sm text-sm font-medium border1">
@@ -78,9 +81,9 @@
             <form asp-controller="Home" asp-action="TogglePostLike">
                 <input type="hidden" name="postId" value="@Model.Id" />
                 <button type="submit"
-                class="button-icon @(Model.Likes.Any(n => n.ApplicationUserId == "00c185e1-7e41-4a01-9643-28ed5c8233ba") ? "text-red-500 bg-red-100" : "")">
+                class="button-icon @(isLiked ? "text-red-500 bg-red-100" : "")">
                     <ion-icon class="text-lg"
-                    name="@(Model.Likes.Any(n => n.ApplicationUserId == "00c185e1-7e41-4a01-9643-28ed5c8233ba") ? "heart" : "heart-outline")">
+                    name="@(isLiked ? "heart" : "heart-outline")">
                     </ion-icon>
                 </button>
             </form>
@@ -96,10 +99,18 @@
         </div>
 
         <div class="ml-auto"></div>
-        <div>
-            <a class="button-icon ml-auto">
-                <ion-icon class="text-lg" name="bookmark-outline"></ion-icon>
-            </a>
+
+        <div class="flex items-center gap-2">
+            <form asp-controller="Home" asp-action="TogglePostFavorite">
+                <input type="hidden" name="PostId" value="@Model.Id"/>
+                <button type="submit" class="button-icon ml-auto @(isFavorited ? "text-orange-500 bt-orange-100":"")">
+                    <ion-icon class="text-lg" name="@(isFavorited ? "bookmark":"bookmark-outline")"></ion-icon>
+                </button>
+            </form>
+            @if(Model.Favorites.Count > 0)
+            {
+                <a href="#">@Model.Favorites.Count</a>
+            }            
         </div>
     </div>
 
