@@ -13,6 +13,8 @@ namespace LoopSocialApp.Data.DataModels
 
         public int NumberOfReposrts { get; set; }
 
+        public bool IsPrivate { get; set; }
+
         public DateTime DateCreated { get; set; }
 
         public DateTime DateUpdated { get; set; }

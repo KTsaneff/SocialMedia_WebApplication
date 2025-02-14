@@ -139,6 +139,26 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> TogglePostVisibility(PostVisibilityVm model)
+        {
+            //Hardcode existing user
+            var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
+
+            //get post from database
+            var post = await _context.Posts
+                .FirstOrDefaultAsync(n => n.Id == model.PostId && n.ApplicationUserId == userId);
+
+            if (post != null)
+            {
+                post.IsPrivate = !post.IsPrivate;
+                _context.Posts.Update(post);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
         public async Task<IActionResult> AddPostComment(PostCommentViewModel model)
         {
             //Hardcode existing user
