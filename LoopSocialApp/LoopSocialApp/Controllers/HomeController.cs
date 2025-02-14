@@ -19,7 +19,10 @@ namespace LoopSocialApp.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var loggedInUserId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
+
             var allPosts = await _context.Posts
+                .Where(n => !n.IsPrivate || n.ApplicationUserId == loggedInUserId)
                 .Include(n => n.ApplicationUser)
                 .Include(n => n.Likes)
                 .Include(n => n.Favorites)
@@ -132,6 +135,26 @@ namespace LoopSocialApp.Controllers
                     DateCreated = DateTime.UtcNow
                 };
                 await _context.Favorites.AddAsync(newFavorite);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TogglePostVisibility(PostVisibilityVm model)
+        {
+            //Hardcode existing user
+            var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
+
+            //get post from database
+            var post = await _context.Posts
+                .FirstOrDefaultAsync(n => n.Id == model.PostId && n.ApplicationUserId == userId);
+
+            if (post != null)
+            {
+                post.IsPrivate = !post.IsPrivate;
+                _context.Posts.Update(post);
                 await _context.SaveChangesAsync();
             }
 
