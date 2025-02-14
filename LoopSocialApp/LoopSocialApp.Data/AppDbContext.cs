@@ -15,6 +15,7 @@ namespace LoopSocialApp.Data
         public DbSet<ApplicationUser> ApplicationUsers { get; set; } = null!;
         public DbSet<Like> Likes { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Favorite> Favorites { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -49,6 +50,22 @@ namespace LoopSocialApp.Data
                 .HasOne(l => l.ApplicationUser)
                 .WithMany(u => u.Comments)
                 .HasForeignKey(l => l.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Favorites
+            builder.Entity<Favorite>()
+                .HasKey(f => new { f.PostId, f.ApplicationUserId });
+
+            builder.Entity<Favorite>()
+                .HasOne(f => f.Post)
+                .WithMany(p => p.Favorites)
+                .HasForeignKey(f => f.PostId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Favorite>()
+                .HasOne(f => f.ApplicationUser)
+                .WithMany(u => u.Favorites)
+                .HasForeignKey(f => f.ApplicationUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(builder);
