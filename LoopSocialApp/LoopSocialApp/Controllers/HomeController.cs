@@ -22,6 +22,7 @@ namespace LoopSocialApp.Controllers
             var allPosts = await _context.Posts
                 .Include(n => n.ApplicationUser)
                 .Include(n => n.Likes)
+                .Include(n => n.Favorites)
                 .Include(n => n.Comments).ThenInclude(n => n.ApplicationUser)
                 .OrderByDescending(n => n.DateCreated)
                 .ToListAsync();
@@ -127,7 +128,8 @@ namespace LoopSocialApp.Controllers
                 var newFavorite = new Favorite
                 {
                     ApplicationUserId = userId,
-                    PostId = model.PostId
+                    PostId = model.PostId,
+                    DateCreated = DateTime.UtcNow
                 };
                 await _context.Favorites.AddAsync(newFavorite);
                 await _context.SaveChangesAsync();
