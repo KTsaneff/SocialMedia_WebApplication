@@ -108,6 +108,35 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> TogglePostFavorite(PostFavoriteVM model)
+        {
+            //Hardcode existing user
+            var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
+
+            //check if user has already favorited the post
+            var existingFavorite= await _context.Favorites
+                .FirstOrDefaultAsync(n => n.PostId == model.PostId && n.ApplicationUserId == userId);
+
+            if (existingFavorite != null)
+            {
+                _context.Favorites.Remove(existingFavorite);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var newFavorite = new Favorite
+                {
+                    ApplicationUserId = userId,
+                    PostId = model.PostId
+                };
+                await _context.Favorites.AddAsync(newFavorite);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
         public async Task<IActionResult> AddPostComment(PostCommentViewModel model)
         {
             //Hardcode existing user
