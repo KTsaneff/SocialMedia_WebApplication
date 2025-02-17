@@ -1,6 +1,6 @@
 ﻿namespace LoopSocialApp.ViewModels.Home
 {
-    public class PostVisibilityVM
+    public class PostLikeVM
     {
         public int PostId { get; set; }
     }

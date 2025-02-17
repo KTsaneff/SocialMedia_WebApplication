@@ -22,11 +22,12 @@ namespace LoopSocialApp.Controllers
             var loggedInUserId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
 
             var allPosts = await _context.Posts
-                .Where(n => !n.IsPrivate || n.ApplicationUserId == loggedInUserId)
+                .Where(n => (!n.IsPrivate || n.ApplicationUserId == loggedInUserId) && n.Reports.Count < 5)
                 .Include(n => n.ApplicationUser)
                 .Include(n => n.Likes)
                 .Include(n => n.Favorites)
                 .Include(n => n.Comments).ThenInclude(n => n.ApplicationUser)
+                .Include(n => n.Reports)
                 .OrderByDescending(n => n.DateCreated)
                 .ToListAsync();
 
@@ -34,7 +35,7 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePost(PostViewModel post)
+        public async Task<IActionResult> CreatePost(PostVM post)
         {
             //Hardcode existing user
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
@@ -83,7 +84,7 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> TogglePostLike(PostLikeViewModel model)
+        public async Task<IActionResult> TogglePostLike(PostLikeVM model)
         {
             //Hardcode existing user
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
@@ -142,7 +143,7 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> TogglePostVisibility(PostVisibilityVm model)
+        public async Task<IActionResult> TogglePostVisibility(PostVisibilityVM model)
         {
             //Hardcode existing user
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
@@ -162,7 +163,7 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPostComment(PostCommentViewModel model)
+        public async Task<IActionResult> AddPostComment(PostCommentVM model)
         {
             //Hardcode existing user
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
@@ -184,7 +185,27 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemovePostComment(RemoveCommentViewModel model)
+        public async Task<IActionResult> AddPostReport(PostReportVM model)
+        {
+            //Hardcode existing user
+            var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
+
+            //Create a comment object
+            var newReport = new Report
+            {
+                ApplicationUserId = userId,
+                PostId = model.PostId,
+                DateCreated = DateTime.UtcNow,
+            };
+
+            await _context.Reports.AddAsync(newReport);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemovePostComment(RemoveCommentVM model)
         {
             var comment = await _context.Comments
                 .FirstOrDefaultAsync(n => n.Id == model.CommentId);

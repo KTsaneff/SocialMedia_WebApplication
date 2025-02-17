@@ -1,6 +1,6 @@
 ﻿namespace LoopSocialApp.ViewModels.Home
 {
-    public class PostViewModel
+    public class PostVM
     {
         public string Content { get; set; }
         public IFormFile Image { get; set; }

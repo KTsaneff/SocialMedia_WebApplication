@@ -1,6 +1,6 @@
 ﻿namespace LoopSocialApp.ViewModels.Home
 {
-    public class PostCommentViewModel
+    public class PostCommentVM
     {
         public int PostId { get; set; }
 
