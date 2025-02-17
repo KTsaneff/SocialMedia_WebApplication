@@ -22,7 +22,7 @@ namespace LoopSocialApp.Controllers
             var loggedInUserId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
 
             var allPosts = await _context.Posts
-                .Where(n => !n.IsPrivate || n.ApplicationUserId == loggedInUserId)
+                .Where(n => (!n.IsPrivate || n.ApplicationUserId == loggedInUserId) && n.Reports.Count < 5)
                 .Include(n => n.ApplicationUser)
                 .Include(n => n.Likes)
                 .Include(n => n.Favorites)
