@@ -34,7 +34,7 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePost(PostViewModel post)
+        public async Task<IActionResult> CreatePost(PostVM post)
         {
             //Hardcode existing user
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
@@ -83,7 +83,7 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> TogglePostLike(PostLikeViewModel model)
+        public async Task<IActionResult> TogglePostLike(PostLikeVM model)
         {
             //Hardcode existing user
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
@@ -142,7 +142,7 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> TogglePostVisibility(PostVisibilityVm model)
+        public async Task<IActionResult> TogglePostVisibility(PostVisibilityVM model)
         {
             //Hardcode existing user
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
@@ -162,7 +162,7 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPostComment(PostCommentViewModel model)
+        public async Task<IActionResult> AddPostComment(PostCommentVM model)
         {
             //Hardcode existing user
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
@@ -184,7 +184,27 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemovePostComment(RemoveCommentViewModel model)
+        public async Task<IActionResult> AddPostReport(PostReportVM model)
+        {
+            //Hardcode existing user
+            var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
+
+            //Create a comment object
+            var newReport = new Report
+            {
+                ApplicationUserId = userId,
+                PostId = model.PostId,
+                DateCreated = DateTime.UtcNow,
+            };
+
+            await _context.Reports.AddAsync(newReport);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemovePostComment(RemoveCommentVM model)
         {
             var comment = await _context.Comments
                 .FirstOrDefaultAsync(n => n.Id == model.CommentId);

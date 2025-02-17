@@ -1,6 +1,6 @@
 ﻿namespace LoopSocialApp.ViewModels.Home
 {
-    public class RemoveCommentViewModel
+    public class RemoveCommentVM
     {
         public int CommentId { get; set; }
     }
