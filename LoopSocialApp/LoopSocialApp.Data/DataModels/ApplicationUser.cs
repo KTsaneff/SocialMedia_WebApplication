@@ -13,6 +13,8 @@ namespace LoopSocialApp.Data.DataModels
 
         public string? ProfileImageUrl { get; set; }
 
+        public bool IsDeleted { get; set; }
+
         //Navigation properties
         public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
 
