@@ -205,6 +205,21 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> PostRemove(PostRemoveVM model)
+        {
+            var postDb = await _context.Posts
+                .FirstOrDefaultAsync(n => n.Id == model.PostId);
+
+            if (postDb != null)
+            {
+                _context.Posts.Remove(postDb);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
         public async Task<IActionResult> RemovePostComment(RemoveCommentVM model)
         {
             var comment = await _context.Comments
