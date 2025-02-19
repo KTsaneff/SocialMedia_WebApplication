@@ -9,7 +9,7 @@
                 <h3 class="font-extrabold text-2xl text-black hidden">Stories</h3>
                 <div class="relative" tabindex="-1" uk-slider="auto play: true;finite: true" uk-lightbox="">
                     <div class="py-5 uk-slide-container">
-                        <ul class="uk-slider-items w-[cals(100%+14px)]"
+                        <ul class="uk-slider-items w-[calc(100%+14px)]"
                             uk-scrollspy="target: > li; cls: uk-animation-scale-up; delay: 20;repeat:true">
                             <li class="md:pr-3" uk-scrollspy-class="uk-animation-fade">
                                 <div class="md:w-16 md:h-16 w-12 h-12 rounded-full relative border-2 border-dashed grid place-items-center bg-slate-200 border-slate-300 shrink-0"
@@ -38,7 +38,7 @@
                                     </div>
                                 </a>
                             </li>
-                            <li class="md\:pr-3 pr-2">
+                            <li class="md:pr-3 pr-2">
                                 <div class="md:w-16 md:h-16 w-12 h-12 bg-slate-200/60 rounded-full animate-pulse"></div>
                             </li>
                         </ul>
@@ -65,11 +65,11 @@
                     </div>
                 </div>
 
-                @if(!Model.Any())
+                @if(Model.Count == 0)
                 {
-                    <div class="bg-white rounded-xl shadow-sm md:p-4 p-2 space-y-4 text=sm font-medium border1"
+                    <div class="bg-white rounded-xl shadow-sm md:p-4 p-2 space-y-4 text-sm font-medium border1"
                          style="width: 580px;">
-                        Currently, there are no posts vailable. Would you like to create the first one?
+                        Currently, there are no posts available. Would you like to create the first one?
                     </div>
                 }
                 else
@@ -97,3 +97,6 @@
 
 <partial name="Modals/_CreateStory"/>
 <partial name="Modals/_CreateStatus" model="new PostVM()"/>
+<partial name="Home/_PostDeleteConfirmation" />
+
+<script src="~/js/site.js"></script>
