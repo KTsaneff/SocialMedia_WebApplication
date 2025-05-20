@@ -12,6 +12,8 @@ namespace LoopSocialApp.Data
         }
 
         public DbSet<Post> Posts { get; set; } = null!;
+
+        public DbSet<Story> Stories { get; set; } = null!;
         public DbSet<ApplicationUser> ApplicationUsers { get; set; } = null!;
         public DbSet<Like> Likes { get; set; }
         public DbSet<Comment> Comments { get; set; }
@@ -24,6 +26,11 @@ namespace LoopSocialApp.Data
                 .HasMany(u => u.Posts)
                 .WithOne(p => p.ApplicationUser)
                 .HasForeignKey(p => p.ApplicationUserId);
+
+            builder.Entity<ApplicationUser>()
+                .HasMany(u => u.Stories)
+                .WithOne(s => s.ApplicationUser)
+                .HasForeignKey(s => s.ApplicationUserId);
 
             builder.Entity<Like>()
                 .HasKey(l => new { l.PostId, l.ApplicationUserId });

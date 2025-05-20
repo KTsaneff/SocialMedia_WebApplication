@@ -10,9 +10,13 @@
 
         public string ApplicationUserId { get; set; } = null!;
 
+        public int StoryId { get; set; }
+
 
         //Navigation properties
-        public Post Post { get; set; }
-        public ApplicationUser ApplicationUser { get; set; }
+        public Post? Post { get; set; }
+        public ApplicationUser? ApplicationUser { get; set; }
+
+        public Story? Story { get; set; }
     }
 }
