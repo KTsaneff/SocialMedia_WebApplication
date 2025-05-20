@@ -2,6 +2,7 @@
 using LoopSocialApp.Data.DataModels;
 using LoopSocialApp.ViewModels.Stories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LoopSocialApp.Controllers
 {
@@ -13,9 +14,11 @@ namespace LoopSocialApp.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var allStories = await _context.Stories.Include(s => s.ApplicationUser).ToListAsync();
+
+            return View(allStories);
         }
 
         [HttpPost]
