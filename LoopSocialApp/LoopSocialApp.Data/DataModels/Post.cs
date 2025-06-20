@@ -11,7 +11,7 @@ namespace LoopSocialApp.Data.DataModels
 
         public string? ImageUrl { get; set; }
 
-        public int NumberOfReposrts { get; set; }
+        public int NumberOfReports { get; set; }
 
         public bool IsPrivate { get; set; }
 

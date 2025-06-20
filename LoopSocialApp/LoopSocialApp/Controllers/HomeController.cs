@@ -49,7 +49,7 @@ namespace LoopSocialApp.Controllers
                 ApplicationUserId = userId,
                 DateCreated = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
-                NumberOfReposrts = 0
+                NumberOfReports = 0
             };
 
             //Check if image is uploaded

@@ -54,7 +54,7 @@ namespace LoopSocialApp.Data.Utilities
                     {
                         Content = "Отиваме към Малко Търново. Няма да чакам никой!",
                         ApplicationUserId = "44543460-578c-48cd-b818-795f30b2e051",
-                        NumberOfReposrts = 2,
+                        NumberOfReports = 2,
                         DateCreated = DateTime.UtcNow,
                         DateUpdated = DateTime.UtcNow,
                     },
@@ -63,7 +63,7 @@ namespace LoopSocialApp.Data.Utilities
                         Content = "Next week in Viena! Who wants to join us?",
                         ApplicationUserId = "d11679d1-9a2d-4b1d-a684-09e4aeb61b2c",
                         ImageUrl = "https://blog.karat-s.com/wp-content/uploads/2016/10/Wienr.jpg",
-                        NumberOfReposrts = 0,
+                        NumberOfReports = 0,
                         DateCreated = DateTime.UtcNow,
                         DateUpdated = DateTime.UtcNow,
                     },

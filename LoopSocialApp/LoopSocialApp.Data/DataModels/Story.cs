@@ -1,22 +1,25 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace LoopSocialApp.Data.DataModels
 {
-    public class ApplicationUser : IdentityUser
+    public class Story
     {
-        public string FullName { get; set; } = null!;
+        [Key]
+        public int Id { get; set; }
 
-        public string? ProfileImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
+
+        public DateTime DateCreated { get; set; }
+
+        public int NumberOfReports { get; set; }
 
         public bool IsDeleted { get; set; }
 
+
+        public string ApplicationUserId { get; set; } = null!;
+
         //Navigation properties
-        public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+        public virtual ApplicationUser ApplicationUser { get; set; } = null!;
 
         public virtual ICollection<Like> Likes { get; set; } = new List<Like>();
 
@@ -25,7 +28,5 @@ namespace LoopSocialApp.Data.DataModels
         public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
 
         public virtual ICollection<Report> Reports { get; set; } = new List<Report>();
-
-        public virtual ICollection<Story> Stories { get; set; } = new List<Story>();
     }
 }

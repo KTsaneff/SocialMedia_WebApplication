@@ -17,6 +17,7 @@ namespace LoopSocialApp.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
         public DbSet<Report> Reports { get; set; }
+        public DbSet<Story> Stories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -26,7 +27,7 @@ namespace LoopSocialApp.Data
                 .HasForeignKey(p => p.ApplicationUserId);
 
             builder.Entity<Like>()
-                .HasKey(l => new { l.PostId, l.ApplicationUserId });
+                .HasKey(l => new { l.PostId, l.StoryId, l.ApplicationUserId });
 
             builder.Entity<Like>()
                 .HasOne(l => l.Post)
@@ -84,6 +85,31 @@ namespace LoopSocialApp.Data
                 .WithMany(u => u.Reports)
                 .HasForeignKey(f => f.ApplicationUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            //Stories
+            builder.Entity<Story>()
+                .HasOne(s => s.ApplicationUser)
+                .WithMany(u => u.Stories)
+                .HasForeignKey(s => s.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Story>()
+                .HasMany(s => s.Comments)
+                .WithOne(c => c.Story)
+                .HasForeignKey(c => c.StoryId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Story>()
+                .HasMany(s => s.Likes)
+                .WithOne(l => l.Story)
+                .HasForeignKey(l => l.StoryId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Story>()
+                .HasMany(s => s.Reports)
+                .WithOne(r => r.Story)
+                .HasForeignKey(r => r.StoryId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             base.OnModelCreating(builder);
         }
