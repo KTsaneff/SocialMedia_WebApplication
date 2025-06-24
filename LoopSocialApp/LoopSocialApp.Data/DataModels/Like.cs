@@ -10,6 +10,8 @@
 
         public string ApplicationUserId { get; set; } = null!;
 
+        public int StoryId { get; set; }
+
 
         //Navigation properties
         public Post? Post { get; set; }
