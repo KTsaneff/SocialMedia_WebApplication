@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LoopSocialApp.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250109212451_Added_Post_Comments")]
-    partial class Added_Post_Comments
+    [Migration("20250624084950_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,6 +47,9 @@ namespace LoopSocialApp.Data.Migrations
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -119,7 +122,10 @@ namespace LoopSocialApp.Data.Migrations
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PostId")
+                    b.Property<int?>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StoryId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -128,10 +134,12 @@ namespace LoopSocialApp.Data.Migrations
 
                     b.HasIndex("PostId");
 
+                    b.HasIndex("StoryId");
+
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("LoopSocialApp.Data.DataModels.Like", b =>
+            modelBuilder.Entity("LoopSocialApp.Data.DataModels.Favorite", b =>
                 {
                     b.Property<int>("PostId")
                         .HasColumnType("int");
@@ -139,12 +147,40 @@ namespace LoopSocialApp.Data.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StoryId")
                         .HasColumnType("int");
 
                     b.HasKey("PostId", "ApplicationUserId");
 
                     b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("StoryId");
+
+                    b.ToTable("Favorites");
+                });
+
+            modelBuilder.Entity("LoopSocialApp.Data.DataModels.Like", b =>
+                {
+                    b.Property<int?>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("PostId", "StoryId", "ApplicationUserId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("StoryId");
 
                     b.ToTable("Likes");
                 });
@@ -174,7 +210,13 @@ namespace LoopSocialApp.Data.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("NumberOfReposrts")
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("NumberOfReports")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -182,6 +224,63 @@ namespace LoopSocialApp.Data.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("LoopSocialApp.Data.DataModels.Report", b =>
+                {
+                    b.Property<int?>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PostId", "ApplicationUserId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("StoryId");
+
+                    b.ToTable("Reports");
+                });
+
+            modelBuilder.Entity("LoopSocialApp.Data.DataModels.Story", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("NumberOfReports")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("Stories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -328,12 +427,45 @@ namespace LoopSocialApp.Data.Migrations
                     b.HasOne("LoopSocialApp.Data.DataModels.Post", "Post")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("LoopSocialApp.Data.DataModels.Story", "Story")
+                        .WithMany("Comments")
+                        .HasForeignKey("StoryId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Post");
+
+                    b.Navigation("Story");
+                });
+
+            modelBuilder.Entity("LoopSocialApp.Data.DataModels.Favorite", b =>
+                {
+                    b.HasOne("LoopSocialApp.Data.DataModels.ApplicationUser", "ApplicationUser")
+                        .WithMany("Favorites")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LoopSocialApp.Data.DataModels.Post", "Post")
+                        .WithMany("Favorites")
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("LoopSocialApp.Data.DataModels.Story", "Story")
+                        .WithMany("Favorites")
+                        .HasForeignKey("StoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Post");
+
+                    b.Navigation("Story");
                 });
 
             modelBuilder.Entity("LoopSocialApp.Data.DataModels.Like", b =>
@@ -350,9 +482,17 @@ namespace LoopSocialApp.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("LoopSocialApp.Data.DataModels.Story", "Story")
+                        .WithMany("Likes")
+                        .HasForeignKey("StoryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Post");
+
+                    b.Navigation("Story");
                 });
 
             modelBuilder.Entity("LoopSocialApp.Data.DataModels.Post", b =>
@@ -361,6 +501,43 @@ namespace LoopSocialApp.Data.Migrations
                         .WithMany("Posts")
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("LoopSocialApp.Data.DataModels.Report", b =>
+                {
+                    b.HasOne("LoopSocialApp.Data.DataModels.ApplicationUser", "ApplicationUser")
+                        .WithMany("Reports")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LoopSocialApp.Data.DataModels.Post", "Post")
+                        .WithMany("Reports")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("LoopSocialApp.Data.DataModels.Story", "Story")
+                        .WithMany("Reports")
+                        .HasForeignKey("StoryId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Post");
+
+                    b.Navigation("Story");
+                });
+
+            modelBuilder.Entity("LoopSocialApp.Data.DataModels.Story", b =>
+                {
+                    b.HasOne("LoopSocialApp.Data.DataModels.ApplicationUser", "ApplicationUser")
+                        .WithMany("Stories")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
@@ -421,16 +598,37 @@ namespace LoopSocialApp.Data.Migrations
                 {
                     b.Navigation("Comments");
 
+                    b.Navigation("Favorites");
+
                     b.Navigation("Likes");
 
                     b.Navigation("Posts");
+
+                    b.Navigation("Reports");
+
+                    b.Navigation("Stories");
                 });
 
             modelBuilder.Entity("LoopSocialApp.Data.DataModels.Post", b =>
                 {
                     b.Navigation("Comments");
 
+                    b.Navigation("Favorites");
+
                     b.Navigation("Likes");
+
+                    b.Navigation("Reports");
+                });
+
+            modelBuilder.Entity("LoopSocialApp.Data.DataModels.Story", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Favorites");
+
+                    b.Navigation("Likes");
+
+                    b.Navigation("Reports");
                 });
 #pragma warning restore 612, 618
         }

@@ -27,7 +27,5 @@ namespace LoopSocialApp.Data.DataModels
         public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
 
         public virtual ICollection<Report> Reports { get; set; } = new List<Report>();
-
-        public virtual ICollection<Story> Stories { get; set; } = new List<Story>();
     }
 }
