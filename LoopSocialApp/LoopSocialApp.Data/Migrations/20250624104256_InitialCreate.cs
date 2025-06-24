@@ -280,7 +280,8 @@ namespace LoopSocialApp.Data.Migrations
                 {
                     PostId = table.Column<int>(type: "int", nullable: false),
                     StoryId = table.Column<int>(type: "int", nullable: false),
-                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

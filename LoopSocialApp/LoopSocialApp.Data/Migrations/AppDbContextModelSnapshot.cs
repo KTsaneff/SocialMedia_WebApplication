@@ -150,7 +150,7 @@ namespace LoopSocialApp.Data.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.Property<int?>("StoryId")
+                    b.Property<int>("StoryId")
                         .HasColumnType("int");
 
                     b.HasKey("PostId", "ApplicationUserId");
@@ -434,12 +434,6 @@ namespace LoopSocialApp.Data.Migrations
                         .HasForeignKey("StoryId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("LoopSocialApp.Data.DataModels.Story", "Story")
-                        .WithMany("Comments")
-                        .HasForeignKey("StoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Post");
@@ -461,9 +455,11 @@ namespace LoopSocialApp.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("LoopSocialApp.Data.DataModels.Story", null)
+                    b.HasOne("LoopSocialApp.Data.DataModels.Story", "Story")
                         .WithMany("Favorites")
-                        .HasForeignKey("StoryId");
+                        .HasForeignKey("StoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ApplicationUser");
 
@@ -542,17 +538,6 @@ namespace LoopSocialApp.Data.Migrations
                         .WithMany("Stories")
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("LoopSocialApp.Data.DataModels.Story", b =>
-                {
-                    b.HasOne("LoopSocialApp.Data.DataModels.ApplicationUser", "ApplicationUser")
-                        .WithMany("Stories")
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");

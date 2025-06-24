@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LoopSocialApp.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250624084950_InitialCreate")]
+    [Migration("20250624104256_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -175,6 +175,9 @@ namespace LoopSocialApp.Data.Migrations
 
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.HasKey("PostId", "StoryId", "ApplicationUserId");
 
