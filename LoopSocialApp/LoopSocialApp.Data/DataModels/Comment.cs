@@ -18,8 +18,6 @@
 
         public string ApplicationUserId { get; set; } = null!;
 
-        public int StoryId { get; set; }
-
 
         //Navigation properties
         public ApplicationUser ApplicationUser { get; set; } = null!;
