@@ -22,7 +22,22 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\stories\" />
-    <Folder Include="wwwroot\images\uploaded\" />
+    <Folder Include="wwwroot\images\posts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\images\profile\krasimir-tsanev-profile.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\profile\nikola-mladenov-profile.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\profile\nona-tsaneva-profile.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\profile\tsvetelina-petkova-profile-img.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

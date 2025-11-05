@@ -58,7 +58,7 @@ namespace LoopSocialApp.Controllers
                 string rootFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
                 if (post.Image.ContentType.Contains("image"))
                 {
-                    string rootFolderPathImages = Path.Combine(rootFolderPath, "images/uploaded");
+                    string rootFolderPathImages = Path.Combine(rootFolderPath, "images/posts");
                     if (!Directory.Exists(rootFolderPathImages))
                     {
                         Directory.CreateDirectory(rootFolderPathImages);
@@ -72,7 +72,7 @@ namespace LoopSocialApp.Controllers
                         await post.Image.CopyToAsync(fileStream);
                     }
 
-                    newPost.ImageUrl = $"/images/uploaded/{fileName}";
+                    newPost.ImageUrl = $"/images/posts/{fileName}";
                 }
             }
 
