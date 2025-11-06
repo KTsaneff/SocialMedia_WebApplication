@@ -15,7 +15,7 @@ namespace LoopSocialApp.ViewComponents
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var top5recentHashtags = await _context.Hashtags
-                .Where(h => h.DateCreated >= DateTime.UtcNow.AddDays(-7))
+                .Where(h => h.DateCreated >= DateTime.UtcNow.AddDays(-7) && h.Count > 0)
                 .OrderByDescending(h => h.Count)
                 .Take(5).ToListAsync();
 

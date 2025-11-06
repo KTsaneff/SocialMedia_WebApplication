@@ -244,6 +244,26 @@ namespace LoopSocialApp.Controllers
                 postDb.IsDeleted = true;
                 _context.Posts.Update(postDb);
                 await _context.SaveChangesAsync();
+            
+                ////Update hashtags
+                var postHashtags = HashtagHelper.GetHashtags(postDb.Content);
+
+                foreach (var tag in postHashtags)
+                {
+                    var hashtagDb = await _context.Hashtags
+                        .FirstOrDefaultAsync(h => h.Name == tag);
+                    if(hashtagDb != null)
+                    {
+                        if(hashtagDb.Count > 0)
+                        {
+                            hashtagDb.Count--;
+                        }
+                        hashtagDb.DateUpdated = DateTime.UtcNow;
+
+                        _context.Hashtags.Update(hashtagDb);
+                        await _context.SaveChangesAsync();
+                    }
+                }
             }
 
             return RedirectToAction("Index");
