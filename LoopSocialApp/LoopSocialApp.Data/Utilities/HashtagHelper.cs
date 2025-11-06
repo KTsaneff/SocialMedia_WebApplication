@@ -8,7 +8,7 @@ namespace LoopSocialApp.Data.Utilities
         {
             var hashtagPattern = new Regex(@"#\w+");
             var matches = hashtagPattern.Matches(postText)
-                .Select(match => match.Value.TrimEnd('.',',','!','?'))
+                .Select(match => match.Value.TrimEnd('.',',','!','?').ToLower())
                 .Distinct()
                 .ToList();
 
