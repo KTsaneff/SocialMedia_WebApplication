@@ -14,12 +14,6 @@ namespace LoopSocialApp.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> Index()
-        {
-            var allStories = await _context.Stories.Include(s => s.ApplicationUser).ToListAsync();
-
-            return View(allStories);
-        }
 
         [HttpPost]
         public async Task<IActionResult> CreateStory(StoryVM storyVM)
@@ -54,7 +48,7 @@ namespace LoopSocialApp.Controllers
             await _context.Stories.AddAsync(newStory);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

@@ -14,7 +14,11 @@ namespace LoopSocialApp.ViewComponents
         }
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var allStories = await _context.Stories.Include(s => s.ApplicationUser).ToListAsync();
+            var allStories = await _context.Stories
+                .Where(s => s.DateCreated >= DateTime.UtcNow.AddHours(-24))
+                .Include(s => s.ApplicationUser)
+                .ToListAsync();
+
             return View(allStories);
         }
     }
