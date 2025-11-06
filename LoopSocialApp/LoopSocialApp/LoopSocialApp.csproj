@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\images\profile\krasimir-tsanev-profile.jpg">
+    <Content Update="wwwroot\images\profile\krassimir-tsanev-profile.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Update="wwwroot\images\profile\nikola-mladenov-profile.jpg">
