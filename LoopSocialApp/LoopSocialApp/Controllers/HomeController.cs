@@ -1,5 +1,6 @@
 using LoopSocialApp.Data;
 using LoopSocialApp.Data.DataModels;
+using LoopSocialApp.Data.Utilities;
 using LoopSocialApp.ViewModels.Home;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -79,6 +80,33 @@ namespace LoopSocialApp.Controllers
             //Add post to database
             await _context.Posts.AddAsync(newPost);
             await _context.SaveChangesAsync();
+
+            //Find and store hashtags
+            var postHashtags = HashtagHelper.GetHashtags(post.Content);
+            foreach (var hashtag in postHashtags)
+            {
+                var hashtagDb = await _context.Hashtags.FirstOrDefaultAsync(h => h.Name == hashtag);
+                if (hashtagDb != null)
+                {
+                    hashtagDb.Count++;
+                    hashtagDb.DateUpdated = DateTime.UtcNow;
+
+                    _context.Hashtags.Update(hashtagDb);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    Hashtag hashtagToAdd = new Hashtag()
+                    {
+                        Name = hashtag,
+                        Count = 1,
+                        DateCreated = DateTime.UtcNow,
+                        DateUpdated = DateTime.UtcNow
+                    };
+                    await _context.Hashtags.AddAsync(hashtagToAdd);
+                    await _context.SaveChangesAsync();
+                }
+            }
 
             //Redirect to home page
             return RedirectToAction("Index");
@@ -216,6 +244,26 @@ namespace LoopSocialApp.Controllers
                 postDb.IsDeleted = true;
                 _context.Posts.Update(postDb);
                 await _context.SaveChangesAsync();
+            
+                ////Update hashtags
+                var postHashtags = HashtagHelper.GetHashtags(postDb.Content);
+
+                foreach (var tag in postHashtags)
+                {
+                    var hashtagDb = await _context.Hashtags
+                        .FirstOrDefaultAsync(h => h.Name == tag);
+                    if(hashtagDb != null)
+                    {
+                        if(hashtagDb.Count > 0)
+                        {
+                            hashtagDb.Count--;
+                        }
+                        hashtagDb.DateUpdated = DateTime.UtcNow;
+
+                        _context.Hashtags.Update(hashtagDb);
+                        await _context.SaveChangesAsync();
+                    }
+                }
             }
 
             return RedirectToAction("Index");
