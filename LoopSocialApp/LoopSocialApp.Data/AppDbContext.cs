@@ -20,6 +20,8 @@ namespace LoopSocialApp.Data
         public DbSet<Favorite> Favorites { get; set; }
         public DbSet<Report> Reports { get; set; }
 
+        public DbSet<Hashtag> Hashtags { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ApplicationUser>()
