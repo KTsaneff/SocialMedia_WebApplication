@@ -11,14 +11,16 @@ namespace LoopSocialApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly AppDbContext _context;
         private readonly IPostService _postService;
+        private readonly IHashtagService _hashtagService;
 
-        public HomeController(ILogger<HomeController> logger, AppDbContext context, IPostService postService)
+        public HomeController(ILogger<HomeController> logger, 
+            IPostService postService, 
+            IHashtagService hashtagService)
         {
             _logger = logger;
-            _context = context;
             _postService = postService;
+            _hashtagService = hashtagService;
         }
 
         public async Task<IActionResult> Index()
@@ -33,10 +35,8 @@ namespace LoopSocialApp.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePost(PostVM post)
         {
-            //Hardcode existing user
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
 
-            //Create new post
             var newPost = new Post
             {
                 Content = post.Content,
@@ -47,36 +47,9 @@ namespace LoopSocialApp.Controllers
                 NumberOfReports = 0
             };
 
-            await _postService.CreatePostAsync(newPost, post.Image); 
+            await _postService.CreatePostAsync(newPost, post.Image);
+            await _hashtagService.ProcessHashtagsForNewPostAsync(newPost.Id);
 
-            //Find and store hashtags
-            var postHashtags = HashtagHelper.GetHashtags(post.Content);
-            foreach (var hashtag in postHashtags)
-            {
-                var hashtagDb = await _context.Hashtags.FirstOrDefaultAsync(h => h.Name == hashtag);
-                if (hashtagDb != null)
-                {
-                    hashtagDb.Count++;
-                    hashtagDb.DateUpdated = DateTime.UtcNow;
-
-                    _context.Hashtags.Update(hashtagDb);
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    Hashtag hashtagToAdd = new Hashtag()
-                    {
-                        Name = hashtag,
-                        Count = 1,
-                        DateCreated = DateTime.UtcNow,
-                        DateUpdated = DateTime.UtcNow
-                    };
-                    await _context.Hashtags.AddAsync(hashtagToAdd);
-                    await _context.SaveChangesAsync();
-                }
-            }
-
-            //Redirect to home page
             return RedirectToAction("Index");
         }
 
@@ -142,20 +115,7 @@ namespace LoopSocialApp.Controllers
         public async Task<IActionResult> PostRemove(PostRemoveVM postRemoveModel)
         {
             await _postService.RemovePostAsync(postRemoveModel.PostId);
-
-            //var postHashtags = HashtagHelper.GetHashtags(postRemoveModel.)
-            //    foreach (var hashtag in postHashtags)
-            //    {
-            //        var hashtagDb = await _context.Hashtags.FirstOrDefaultAsync(h => h.Name == hashtag);
-            //        if(hashtagDb != null && hashtagDb.Count > 0)
-            //        {
-            //            hashtagDb.Count -= 1;
-            //            hashtagDb.DateUpdated = DateTime.UtcNow;
-
-            //            _context.Hashtags.Update(hashtagDb);
-            //            await _context.SaveChangesAsync();
-            //        }
-            //    }
+            await _hashtagService.ProcessHashtagsForRemovedPostAsync(postRemoveModel.PostId);
 
             return RedirectToAction("Index");
         }

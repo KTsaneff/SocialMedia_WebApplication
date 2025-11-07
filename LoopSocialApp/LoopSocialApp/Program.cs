@@ -20,6 +20,7 @@ namespace LoopSocialApp
 
             //Services Configuration
             builder.Services.AddScoped<IPostService, PostService>();
+            builder.Services.AddScoped<IHashtagService, HashtagService>();
 
             builder.Services.AddDbContext<AppDbContext>(options => options
             .UseSqlServer(dbConnectionString));
