@@ -53,30 +53,6 @@ namespace LoopSocialApp.Controllers
                 NumberOfReports = 0
             };
 
-            //Check if image is uploaded
-            if (post.Image != null && post.Image.Length > 0)
-            {
-                string rootFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                if (post.Image.ContentType.Contains("image"))
-                {
-                    string rootFolderPathImages = Path.Combine(rootFolderPath, "images/posts");
-                    if (!Directory.Exists(rootFolderPathImages))
-                    {
-                        Directory.CreateDirectory(rootFolderPathImages);
-                    }
-
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(post.Image.FileName);
-                    string filePath = Path.Combine(rootFolderPathImages, fileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await post.Image.CopyToAsync(fileStream);
-                    }
-
-                    newPost.ImageUrl = $"/images/posts/{fileName}";
-                }
-            }
-
             //Add post to database
             await _context.Posts.AddAsync(newPost);
             await _context.SaveChangesAsync();
