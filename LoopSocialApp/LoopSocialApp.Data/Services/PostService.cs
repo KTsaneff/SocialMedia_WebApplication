@@ -135,10 +135,22 @@ namespace LoopSocialApp.Data.Services
                 await _context.SaveChangesAsync();
             }
         }
-        public async Task AddPostCommentAsync(Comment coment)
+        public async Task AddPostCommentAsync(Comment comment)
         {
-            await _context.Comments.AddAsync(coment);
+            await _context.Comments.AddAsync(comment);
             await _context.SaveChangesAsync();
+        }
+        public async Task TogglePostVisibilityAsync(int postId, string userId)
+        {
+            var post = await _context.Posts
+                .FirstOrDefaultAsync(n => n.Id == postId && n.ApplicationUserId == userId);
+
+            if (post != null)
+            {
+                post.IsPrivate = !post.IsPrivate;
+                _context.Posts.Update(post);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

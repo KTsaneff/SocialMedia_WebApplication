@@ -1,4 +1,6 @@
 using LoopSocialApp.Data;
+using LoopSocialApp.Data.Services;
+using LoopSocialApp.Data.Services.Interfaces;
 using LoopSocialApp.Data.Utilities;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +17,9 @@ namespace LoopSocialApp
 
             string? dbConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string not found.");
+
+            //Services Configuration
+            builder.Services.AddScoped<IPostService, PostService>();
 
             builder.Services.AddDbContext<AppDbContext>(options => options
             .UseSqlServer(dbConnectionString));

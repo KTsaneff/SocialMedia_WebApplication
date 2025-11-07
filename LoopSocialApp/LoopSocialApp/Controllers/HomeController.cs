@@ -1,5 +1,6 @@
 using LoopSocialApp.Data;
 using LoopSocialApp.Data.DataModels;
+using LoopSocialApp.Data.Services.Interfaces;
 using LoopSocialApp.Data.Utilities;
 using LoopSocialApp.ViewModels.Home;
 using Microsoft.AspNetCore.Mvc;
@@ -11,27 +12,20 @@ namespace LoopSocialApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly AppDbContext _context;
+        private readonly IPostService _postService;
 
-        public HomeController(ILogger<HomeController> logger, AppDbContext context)
+        public HomeController(ILogger<HomeController> logger, AppDbContext context, IPostService postService)
         {
             _logger = logger;
             _context = context;
+            _postService = postService;
         }
 
         public async Task<IActionResult> Index()
         {
             var loggedInUserId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
 
-            var allPosts = await _context.Posts
-                .Where(n => (!n.IsPrivate || n.ApplicationUserId == loggedInUserId) 
-                             && n.Reports.Count < 5 && !n.IsDeleted)
-                .Include(n => n.ApplicationUser)
-                .Include(n => n.Likes)
-                .Include(n => n.Favorites)
-                .Include(n => n.Comments).ThenInclude(n => n.ApplicationUser)
-                .Include(n => n.Reports)
-                .OrderByDescending(n => n.DateCreated)
-                .ToListAsync();
+            var allPosts = await _postService.GetAllPostsAsync(loggedInUserId);
 
             return View(allPosts);
         }
@@ -53,9 +47,7 @@ namespace LoopSocialApp.Controllers
                 NumberOfReports = 0
             };
 
-            //Add post to database
-            await _context.Posts.AddAsync(newPost);
-            await _context.SaveChangesAsync();
+            await _postService.CreatePostAsync(newPost, post.Image); 
 
             //Find and store hashtags
             var postHashtags = HashtagHelper.GetHashtags(post.Content);
@@ -89,173 +81,89 @@ namespace LoopSocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> TogglePostLike(PostLikeVM model)
+        public async Task<IActionResult> TogglePostLike(PostLikeVM postLikeModel)
         {
-            //Hardcode existing user
-            var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
+            var loggedInUser = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
 
-            //check if user has already liked the post
-            var existingLike = await _context.Likes
-                .FirstOrDefaultAsync(n => n.ApplicationUserId == userId && n.PostId == model.PostId);
-
-            if (existingLike != null)
-            {
-                _context.Likes.Remove(existingLike);
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                var newLike = new Like
-                {
-                    ApplicationUserId = userId,
-                    PostId = model.PostId
-                };
-                await _context.Likes.AddAsync(newLike);
-                await _context.SaveChangesAsync();
-            }
+            await _postService.TogglePostLikeAsync(postLikeModel.PostId, loggedInUser);
 
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<IActionResult> TogglePostFavorite(PostFavoriteVM model)
+        public async Task<IActionResult> TogglePostFavorite(PostFavoriteVM postFavoriteModel)
         {
-            //Hardcode existing user
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
 
-            //check if user has already favorited the post
-            var existingFavorite= await _context.Favorites
-                .FirstOrDefaultAsync(n => n.PostId == model.PostId && n.ApplicationUserId == userId);
-
-            if (existingFavorite != null)
-            {
-                _context.Favorites.Remove(existingFavorite);
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                var newFavorite = new Favorite
-                {
-                    ApplicationUserId = userId,
-                    PostId = model.PostId,
-                    DateCreated = DateTime.UtcNow
-                };
-                await _context.Favorites.AddAsync(newFavorite);
-                await _context.SaveChangesAsync();
-            }
+            await _postService.TogglePostFavoritesAsync(postFavoriteModel.PostId, userId);
 
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<IActionResult> TogglePostVisibility(PostVisibilityVM model)
+        public async Task<IActionResult> TogglePostVisibility(PostVisibilityVM postVisibilityModel)
         {
-            //Hardcode existing user
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
 
-            //get post from database
-            var post = await _context.Posts
-                .FirstOrDefaultAsync(n => n.Id == model.PostId && n.ApplicationUserId == userId);
-
-            if (post != null)
-            {
-                post.IsPrivate = !post.IsPrivate;
-                _context.Posts.Update(post);
-                await _context.SaveChangesAsync();
-            }
+            await _postService.TogglePostVisibilityAsync(postVisibilityModel.PostId, userId);
 
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPostComment(PostCommentVM model)
+        public async Task<IActionResult> AddPostComment(PostCommentVM postCommentModel)
         {
-            //Hardcode existing user
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
 
-            //Create a comment object
             var newComment = new Comment
             {
-                Content = model.Content,
+                Content = postCommentModel.Content,
                 DateCreated = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
                 ApplicationUserId = userId,
-                PostId = model.PostId
+                PostId = postCommentModel.PostId
             };
-
-            await _context.Comments.AddAsync(newComment);
-            await _context.SaveChangesAsync();
+            await _postService.AddPostCommentAsync(newComment);
 
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPostReport(PostReportVM model)
+        public async Task<IActionResult> AddPostReport(PostReportVM postReportModel)
         {
-            //Hardcode existing user
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
 
-            //Create a comment object
-            var newReport = new Report
-            {
-                ApplicationUserId = userId,
-                PostId = model.PostId,
-                DateCreated = DateTime.UtcNow,
-            };
-
-            await _context.Reports.AddAsync(newReport);
-            await _context.SaveChangesAsync();
+            await _postService.ReportPostAsync(postReportModel.PostId, userId);
 
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostRemove(PostRemoveVM model)
+        public async Task<IActionResult> PostRemove(PostRemoveVM postRemoveModel)
         {
-            var postDb = await _context.Posts
-                .FirstOrDefaultAsync(n => n.Id == model.PostId);
+            await _postService.RemovePostAsync(postRemoveModel.PostId);
 
-            if (postDb != null)
-            {
-                postDb.IsDeleted = true;
-                _context.Posts.Update(postDb);
-                await _context.SaveChangesAsync();
-            
-                ////Update hashtags
-                var postHashtags = HashtagHelper.GetHashtags(postDb.Content);
+            //var postHashtags = HashtagHelper.GetHashtags(postRemoveModel.)
+            //    foreach (var hashtag in postHashtags)
+            //    {
+            //        var hashtagDb = await _context.Hashtags.FirstOrDefaultAsync(h => h.Name == hashtag);
+            //        if(hashtagDb != null && hashtagDb.Count > 0)
+            //        {
+            //            hashtagDb.Count -= 1;
+            //            hashtagDb.DateUpdated = DateTime.UtcNow;
 
-                foreach (var tag in postHashtags)
-                {
-                    var hashtagDb = await _context.Hashtags
-                        .FirstOrDefaultAsync(h => h.Name == tag);
-                    if(hashtagDb != null)
-                    {
-                        if(hashtagDb.Count > 0)
-                        {
-                            hashtagDb.Count--;
-                        }
-                        hashtagDb.DateUpdated = DateTime.UtcNow;
-
-                        _context.Hashtags.Update(hashtagDb);
-                        await _context.SaveChangesAsync();
-                    }
-                }
-            }
+            //            _context.Hashtags.Update(hashtagDb);
+            //            await _context.SaveChangesAsync();
+            //        }
+            //    }
 
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemovePostComment(RemoveCommentVM model)
+        public async Task<IActionResult> RemovePostComment(RemoveCommentVM removeCommentModel)
         {
-            var comment = await _context.Comments
-                .FirstOrDefaultAsync(n => n.Id == model.CommentId);
-
-            if(comment != null)
-            {
-                _context.Comments.Remove(comment);
-                await _context.SaveChangesAsync();
-            }
+            await _postService.RemovePostCommentAsync(removeCommentModel.CommentId);
 
             return RedirectToAction("Index");
         }

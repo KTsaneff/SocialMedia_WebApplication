@@ -8,10 +8,11 @@ namespace LoopSocialApp.Data.Services.Interfaces
         Task<List<Post>> GetAllPostsAsync(string loggedInUserId);
         Task<Post> CreatePostAsync(Post post, IFormFile image);
         Task RemovePostAsync(int postId);
-        Task AddPostCommentAsync(Comment coment);
+        Task AddPostCommentAsync(Comment comment);
         Task RemovePostCommentAsync(int commentId);
         Task TogglePostLikeAsync(int postId, string userId);
         Task TogglePostFavoritesAsync(int postId, string userId);
+        Task TogglePostVisibilityAsync(int postId, string userId);
         Task ReportPostAsync(int postId, string userId);
     }
 }
