@@ -2,6 +2,7 @@ using LoopSocialApp.Data;
 using LoopSocialApp.Data.DataModels;
 using LoopSocialApp.Data.Services.Interfaces;
 using LoopSocialApp.Data.Utilities;
+using LoopSocialApp.Data.Utilities.Enums;
 using LoopSocialApp.ViewModels.Home;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,14 +14,17 @@ namespace LoopSocialApp.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IPostService _postService;
         private readonly IHashtagService _hashtagService;
+        private readonly IFilesService _filesService;
 
         public HomeController(ILogger<HomeController> logger, 
             IPostService postService, 
-            IHashtagService hashtagService)
+            IHashtagService hashtagService,
+            IFilesService filesService)
         {
             _logger = logger;
             _postService = postService;
             _hashtagService = hashtagService;
+            _filesService = filesService;
         }
 
         public async Task<IActionResult> Index()
@@ -37,17 +41,20 @@ namespace LoopSocialApp.Controllers
         {
             var userId = "00c185e1-7e41-4a01-9643-28ed5c8233ba";
 
+            var imageFileType = ImageFileType.PostImage;
+            var imageUploadPath = await _filesService.UploadImageAsync(post.Image, imageFileType);
+
             var newPost = new Post
             {
                 Content = post.Content,
-                ImageUrl = string.Empty,
+                ImageUrl = imageUploadPath,
                 ApplicationUserId = userId,
                 DateCreated = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
                 NumberOfReports = 0
             };
 
-            await _postService.CreatePostAsync(newPost, post.Image);
+            await _postService.CreatePostAsync(newPost);
             await _hashtagService.ProcessHashtagsForNewPostAsync(newPost.Id);
 
             return RedirectToAction("Index");

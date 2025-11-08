@@ -27,31 +27,8 @@ namespace LoopSocialApp.Data.Services
                 .OrderByDescending(n => n.DateCreated)
                 .ToListAsync();
         }
-        public async Task<Post> CreatePostAsync(Post post, IFormFile image)
+        public async Task<Post> CreatePostAsync(Post post)
         {
-            if (image != null && image.Length > 0)
-            {
-                string rootFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                if (image.ContentType.Contains("image"))
-                {
-                    string rootFolderPathImages = Path.Combine(rootFolderPath, "images/posts");
-                    if (!Directory.Exists(rootFolderPathImages))
-                    {
-                        Directory.CreateDirectory(rootFolderPathImages);
-                    }
-
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-                    string filePath = Path.Combine(rootFolderPathImages, fileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await image.CopyToAsync(fileStream);
-                    }
-
-                    post.ImageUrl = $"/images/posts/{fileName}";
-                }
-            }
-
             await _context.Posts.AddAsync(post);
             await _context.SaveChangesAsync();
 

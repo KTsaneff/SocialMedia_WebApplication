@@ -1,5 +1,6 @@
 ﻿using LoopSocialApp.Data.DataModels;
 using LoopSocialApp.Data.Services.Interfaces;
+using LoopSocialApp.Data.Utilities.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,26 +22,8 @@ namespace LoopSocialApp.Data.Services
                 .ToListAsync();
         }
 
-        public async Task<Story> CreateStoryAsync(Story newStory, IFormFile image)
+        public async Task<Story> CreateStoryAsync(Story newStory)
         {
-            if (image != null && image.Length > 0)
-            {
-                string rootFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                if (image.ContentType.Contains("image"))
-                {
-                    string rootFolderImages = Path.Combine(rootFolderPath, "images/stories");
-                    Directory.CreateDirectory(rootFolderImages);
-
-                    string fileName = Guid.NewGuid() + Path.GetExtension(image.FileName);
-                    string filePath = Path.Combine(rootFolderImages, fileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                        await image.CopyToAsync(stream);
-
-                    newStory.ImageUrl = "/images/stories/" + fileName;
-                }
-            }
-
             await _context.Stories.AddAsync(newStory);
             await _context.SaveChangesAsync();
 
