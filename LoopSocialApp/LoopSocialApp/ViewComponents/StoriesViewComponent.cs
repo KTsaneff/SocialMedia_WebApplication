@@ -1,25 +1,20 @@
-﻿using LoopSocialApp.Data;
+﻿using LoopSocialApp.Data.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LoopSocialApp.ViewComponents
 {
     public class StoriesViewComponent : ViewComponent
     {
-        private readonly AppDbContext _context;
+        private readonly IStoriesService _storiesService;
 
-        public StoriesViewComponent(AppDbContext context)
-        {   
-            _context = context;
+        public StoriesViewComponent(IStoriesService storiesService)
+        {
+            _storiesService = storiesService;
         }
+
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var allStories = await _context.Stories
-                .Where(s => s.DateCreated >= DateTime.UtcNow.AddHours(-24))
-                .Include(s => s.ApplicationUser)
-                .ToListAsync();
-
-            return View(allStories);
+            return View(await _storiesService.GetAllStoriesAsync());
         }
     }
 }

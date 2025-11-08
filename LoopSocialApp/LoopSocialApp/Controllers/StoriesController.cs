@@ -1,5 +1,6 @@
 ﻿using LoopSocialApp.Data;
 using LoopSocialApp.Data.DataModels;
+using LoopSocialApp.Data.Services.Interfaces;
 using LoopSocialApp.ViewModels.Stories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +9,11 @@ namespace LoopSocialApp.Controllers
 {
     public class StoriesController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IStoriesService _storiesService;
 
-        public StoriesController(AppDbContext context)
+        public StoriesController(IStoriesService storiesService)
         {
-            _context = context;
+            _storiesService = storiesService;
         }
 
         [HttpPost]
@@ -27,26 +28,7 @@ namespace LoopSocialApp.Controllers
                 ApplicationUserId = loggedInUserId
             };
 
-            if(storyVM.Image != null && storyVM.Image.Length > 0)
-            {
-                string rootFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                if (storyVM.Image.ContentType.Contains("image"))
-                {
-                    string rootFolderImages = Path.Combine(rootFolderPath, "images/stories");
-                    Directory.CreateDirectory(rootFolderImages);
-
-                    string fileName = Guid.NewGuid() + Path.GetExtension(storyVM.Image.FileName);
-                    string filePath = Path.Combine(rootFolderImages, fileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                        await storyVM.Image.CopyToAsync(stream);
-
-                    newStory.ImageUrl = "/images/stories/" + fileName;
-                }
-            }
-
-            await _context.Stories.AddAsync(newStory);
-            await _context.SaveChangesAsync();
+            await _storiesService.CreateStoryAsync(newStory, storyVM.Image!);
 
             return RedirectToAction("Index", "Home");
         }
