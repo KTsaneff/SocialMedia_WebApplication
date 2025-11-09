@@ -112,6 +112,23 @@ namespace LoopSocialApp.Data.Services
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<List<Post>> GetAllFavoritePostsAsync(string loggedInUserId)
+        {
+            var allFavoriedPosts = await _context.Favorites
+                .Include(f => f.Post.Reports)
+                    .Where(f => f.ApplicationUserId == loggedInUserId
+                    && !f.Post.IsDeleted
+                    && f.Post.Reports.Count < 5)
+                .Include(f => f.Post)
+                .Select(f => f.Post)
+                    .Include(p => p.ApplicationUser)
+                    .Include(p => p.Comments)
+                        .ThenInclude(c => c.ApplicationUser)
+                    .Include(p => p.Likes)
+                .ToListAsync();
+
+            return allFavoriedPosts;
+        }
         public async Task AddPostCommentAsync(Comment comment)
         {
             await _context.Comments.AddAsync(comment);
