@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LoopSocialApp.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitClean : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,6 +51,22 @@ namespace LoopSocialApp.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Hashtags",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Count = table.Column<int>(type: "int", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Hashtags", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -205,7 +221,7 @@ namespace LoopSocialApp.Data.Migrations
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -224,6 +240,7 @@ namespace LoopSocialApp.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.CheckConstraint("CK_Comments_PostOrStory", "(CASE WHEN [PostId] IS NULL THEN 0 ELSE 1 END) + (CASE WHEN [StoryId] IS NULL THEN 0 ELSE 1 END) = 1");
                     table.ForeignKey(
                         name: "FK_Comments_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
@@ -246,15 +263,17 @@ namespace LoopSocialApp.Data.Migrations
                 name: "Favorites",
                 columns: table => new
                 {
-                    PostId = table.Column<int>(type: "int", nullable: false),
-                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    StoryId = table.Column<int>(type: "int", nullable: false)
+                    PostId = table.Column<int>(type: "int", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    StoryId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Favorites", x => new { x.PostId, x.ApplicationUserId });
+                    table.PrimaryKey("PK_Favorites", x => x.Id);
+                    table.CheckConstraint("CK_Favorites_PostOrStory", "(CASE WHEN [PostId] IS NULL THEN 0 ELSE 1 END) + (CASE WHEN [StoryId] IS NULL THEN 0 ELSE 1 END) = 1");
                     table.ForeignKey(
                         name: "FK_Favorites_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
@@ -270,22 +289,23 @@ namespace LoopSocialApp.Data.Migrations
                         name: "FK_Favorites_Stories_StoryId",
                         column: x => x.StoryId,
                         principalTable: "Stories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Likes",
                 columns: table => new
                 {
-                    PostId = table.Column<int>(type: "int", nullable: false),
-                    StoryId = table.Column<int>(type: "int", nullable: false),
-                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PostId = table.Column<int>(type: "int", nullable: true),
+                    StoryId = table.Column<int>(type: "int", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Likes", x => new { x.PostId, x.StoryId, x.ApplicationUserId });
+                    table.PrimaryKey("PK_Likes", x => x.Id);
+                    table.CheckConstraint("CK_Likes_PostOrStory", "(CASE WHEN [PostId] IS NULL THEN 0 ELSE 1 END) + (CASE WHEN [StoryId] IS NULL THEN 0 ELSE 1 END) = 1");
                     table.ForeignKey(
                         name: "FK_Likes_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
@@ -308,15 +328,17 @@ namespace LoopSocialApp.Data.Migrations
                 name: "Reports",
                 columns: table => new
                 {
-                    PostId = table.Column<int>(type: "int", nullable: false),
-                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    StoryId = table.Column<int>(type: "int", nullable: true)
+                    PostId = table.Column<int>(type: "int", nullable: true),
+                    StoryId = table.Column<int>(type: "int", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reports", x => new { x.PostId, x.ApplicationUserId });
+                    table.PrimaryKey("PK_Reports", x => x.Id);
+                    table.CheckConstraint("CK_Reports_PostOrStory", "(CASE WHEN [PostId] IS NULL THEN 0 ELSE 1 END) + (CASE WHEN [StoryId] IS NULL THEN 0 ELSE 1 END) = 1");
                     table.ForeignKey(
                         name: "FK_Reports_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
@@ -390,9 +412,23 @@ namespace LoopSocialApp.Data.Migrations
                 column: "StoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Favorites_ApplicationUserId",
+                name: "IX_Favorites_ApplicationUserId_PostId",
                 table: "Favorites",
-                column: "ApplicationUserId");
+                columns: new[] { "ApplicationUserId", "PostId" },
+                unique: true,
+                filter: "[PostId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Favorites_ApplicationUserId_StoryId",
+                table: "Favorites",
+                columns: new[] { "ApplicationUserId", "StoryId" },
+                unique: true,
+                filter: "[StoryId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Favorites_PostId",
+                table: "Favorites",
+                column: "PostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Favorites_StoryId",
@@ -400,9 +436,23 @@ namespace LoopSocialApp.Data.Migrations
                 column: "StoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Likes_ApplicationUserId",
+                name: "IX_Likes_ApplicationUserId_PostId",
                 table: "Likes",
-                column: "ApplicationUserId");
+                columns: new[] { "ApplicationUserId", "PostId" },
+                unique: true,
+                filter: "[PostId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Likes_ApplicationUserId_StoryId",
+                table: "Likes",
+                columns: new[] { "ApplicationUserId", "StoryId" },
+                unique: true,
+                filter: "[StoryId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Likes_PostId",
+                table: "Likes",
+                column: "PostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Likes_StoryId",
@@ -415,9 +465,23 @@ namespace LoopSocialApp.Data.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reports_ApplicationUserId",
+                name: "IX_Reports_ApplicationUserId_PostId",
                 table: "Reports",
-                column: "ApplicationUserId");
+                columns: new[] { "ApplicationUserId", "PostId" },
+                unique: true,
+                filter: "[PostId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reports_ApplicationUserId_StoryId",
+                table: "Reports",
+                columns: new[] { "ApplicationUserId", "StoryId" },
+                unique: true,
+                filter: "[StoryId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reports_PostId",
+                table: "Reports",
+                column: "PostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reports_StoryId",
@@ -453,6 +517,9 @@ namespace LoopSocialApp.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Favorites");
+
+            migrationBuilder.DropTable(
+                name: "Hashtags");
 
             migrationBuilder.DropTable(
                 name: "Likes");

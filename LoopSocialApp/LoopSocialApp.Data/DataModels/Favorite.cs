@@ -6,11 +6,11 @@
 
         public DateTime DateCreated { get; set; }
 
-        public int PostId { get; set; }
+        public int? PostId { get; set; }
 
         public string ApplicationUserId { get; set; } = null!;
 
-        public int StoryId { get; set; }
+        public int? StoryId { get; set; }
 
 
         //Navigation properties
