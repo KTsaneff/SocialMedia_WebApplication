@@ -133,33 +133,51 @@ namespace LoopSocialApp.Data.Migrations
 
                     b.HasIndex("StoryId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", t =>
+                        {
+                            t.HasCheckConstraint("CK_Comments_PostOrStory", "(CASE WHEN [PostId] IS NULL THEN 0 ELSE 1 END) + (CASE WHEN [StoryId] IS NULL THEN 0 ELSE 1 END) = 1");
+                        });
                 });
 
             modelBuilder.Entity("LoopSocialApp.Data.DataModels.Favorite", b =>
                 {
-                    b.Property<int>("PostId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<string>("ApplicationUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Id")
+                    b.Property<int?>("PostId")
                         .HasColumnType("int");
 
-                    b.Property<int>("StoryId")
+                    b.Property<int?>("StoryId")
                         .HasColumnType("int");
 
-                    b.HasKey("PostId", "ApplicationUserId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("PostId");
 
                     b.HasIndex("StoryId");
 
-                    b.ToTable("Favorites");
+                    b.HasIndex("ApplicationUserId", "PostId")
+                        .IsUnique()
+                        .HasFilter("[PostId] IS NOT NULL");
+
+                    b.HasIndex("ApplicationUserId", "StoryId")
+                        .IsUnique()
+                        .HasFilter("[StoryId] IS NOT NULL");
+
+                    b.ToTable("Favorites", t =>
+                        {
+                            t.HasCheckConstraint("CK_Favorites_PostOrStory", "(CASE WHEN [PostId] IS NULL THEN 0 ELSE 1 END) + (CASE WHEN [StoryId] IS NULL THEN 0 ELSE 1 END) = 1");
+                        });
                 });
 
             modelBuilder.Entity("LoopSocialApp.Data.DataModels.Hashtag", b =>
@@ -190,25 +208,40 @@ namespace LoopSocialApp.Data.Migrations
 
             modelBuilder.Entity("LoopSocialApp.Data.DataModels.Like", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int?>("PostId")
                         .HasColumnType("int");
 
                     b.Property<int?>("StoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.HasKey("Id");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("PostId", "StoryId", "ApplicationUserId");
-
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("PostId");
 
                     b.HasIndex("StoryId");
 
-                    b.ToTable("Likes");
+                    b.HasIndex("ApplicationUserId", "PostId")
+                        .IsUnique()
+                        .HasFilter("[PostId] IS NOT NULL");
+
+                    b.HasIndex("ApplicationUserId", "StoryId")
+                        .IsUnique()
+                        .HasFilter("[StoryId] IS NOT NULL");
+
+                    b.ToTable("Likes", t =>
+                        {
+                            t.HasCheckConstraint("CK_Likes_PostOrStory", "(CASE WHEN [PostId] IS NULL THEN 0 ELSE 1 END) + (CASE WHEN [StoryId] IS NULL THEN 0 ELSE 1 END) = 1");
+                        });
                 });
 
             modelBuilder.Entity("LoopSocialApp.Data.DataModels.Post", b =>
@@ -254,28 +287,43 @@ namespace LoopSocialApp.Data.Migrations
 
             modelBuilder.Entity("LoopSocialApp.Data.DataModels.Report", b =>
                 {
-                    b.Property<int?>("PostId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<string>("ApplicationUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Id")
+                    b.Property<int?>("PostId")
                         .HasColumnType("int");
 
                     b.Property<int?>("StoryId")
                         .HasColumnType("int");
 
-                    b.HasKey("PostId", "ApplicationUserId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("PostId");
 
                     b.HasIndex("StoryId");
 
-                    b.ToTable("Reports");
+                    b.HasIndex("ApplicationUserId", "PostId")
+                        .IsUnique()
+                        .HasFilter("[PostId] IS NOT NULL");
+
+                    b.HasIndex("ApplicationUserId", "StoryId")
+                        .IsUnique()
+                        .HasFilter("[StoryId] IS NOT NULL");
+
+                    b.ToTable("Reports", t =>
+                        {
+                            t.HasCheckConstraint("CK_Reports_PostOrStory", "(CASE WHEN [PostId] IS NULL THEN 0 ELSE 1 END) + (CASE WHEN [StoryId] IS NULL THEN 0 ELSE 1 END) = 1");
+                        });
                 });
 
             modelBuilder.Entity("LoopSocialApp.Data.DataModels.Story", b =>
@@ -478,14 +526,12 @@ namespace LoopSocialApp.Data.Migrations
                     b.HasOne("LoopSocialApp.Data.DataModels.Post", "Post")
                         .WithMany("Favorites")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("LoopSocialApp.Data.DataModels.Story", "Story")
                         .WithMany("Favorites")
                         .HasForeignKey("StoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("ApplicationUser");
 
@@ -505,14 +551,12 @@ namespace LoopSocialApp.Data.Migrations
                     b.HasOne("LoopSocialApp.Data.DataModels.Post", "Post")
                         .WithMany("Likes")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("LoopSocialApp.Data.DataModels.Story", "Story")
                         .WithMany("Likes")
                         .HasForeignKey("StoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("ApplicationUser");
 
@@ -543,8 +587,7 @@ namespace LoopSocialApp.Data.Migrations
                     b.HasOne("LoopSocialApp.Data.DataModels.Post", "Post")
                         .WithMany("Reports")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("LoopSocialApp.Data.DataModels.Story", "Story")
                         .WithMany("Reports")
@@ -563,7 +606,7 @@ namespace LoopSocialApp.Data.Migrations
                     b.HasOne("LoopSocialApp.Data.DataModels.ApplicationUser", "ApplicationUser")
                         .WithMany("Stories")
                         .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
