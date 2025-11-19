@@ -2,7 +2,6 @@
     ViewData["Title"] = "Loop";
 }
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,24 +16,25 @@
 </head>
 <body>
     <div id="wrapper">
-        @*Topbar*@
-        <partial name="Navigation/_TopBar" />
-        @*Side bar (left)*@
         <partial name="Navigation/_SideBar" />
 
-        @RenderBody()
+        <div class="main-content">
+            <partial name="Navigation/_TopBar" />
+
+            <main class="app-content">
+                @RenderBody()
+            </main>
+        </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    @* //Asset scripts *@
     <script src="~/js/uikit.min.js"></script>
     <script src="~/js/simplebar.js"></script>
     <script src="~/js/script.js"></script>
 
-    @*Ion Icon*@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 

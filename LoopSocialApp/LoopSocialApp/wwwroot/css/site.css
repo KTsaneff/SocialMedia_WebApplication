@@ -20,7 +20,6 @@ form > button.icon-link, button.delete-post-btn {
     /* Add any additional button styling here */
 }
 
-    form > button.icon-link > ion-icon, button.delete-post-btn {
-        margin-right: 8px; /* Adds space between the icon and the text */
-    }
-
+form > button.icon-link > ion-icon, button.delete-post-btn {
+    margin-right: 8px; /* Adds space between the icon and the text */
+}
