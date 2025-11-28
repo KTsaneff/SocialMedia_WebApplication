@@ -35,5 +35,63 @@
 
             </div>
         </div>
+
+        <div class="relative border-b">
+            <nav class="nav__underline px-6 p-0 border-transparent -mb-px">
+                <ul class="uk-slider-items w-[calc(100%+0.10px)] !overflow-hidden" 
+                    uk-switcher="connect: #setting-tab animation: uk-animation-slide-right-medium, uk-animation-slide-left-medium">
+
+                    <li class="w-auto pr-2.5">
+                        <a href="#">Update Profile</a>
+                    </li>
+
+                    <li class="w-auto pr-2.5">
+                        <a href="#">Change Password</a>
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+
+        <div id="setting_tab" class="uk-switcher py-12 px-20 overflow-hidden text-black text-sm">
+            <div>
+                <div class="space-y-6">
+                    <div class="flex items-center gap-10">
+                        <label class="w-32 text-right">Full name</label>
+                        <div class="flex-1">
+                            <input type="text" name="fullName" placeholder="Enter your full name" value="@Model.FullName" class="w-full"/>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-10">
+                        <label class="w-32 text-right">Username</label>
+                        <div class="flex-1">
+                            <input type="text" name="username" placeholder="Enter your username" value="@@tsaneff" class="w-full" />
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-10">
+                        <label class="w-32 text-right">Email</label>
+                        <div class="flex-1">
+                            <input type="email" name="emailAddress" placeholder="Enter your email address" value="" class="w-full" />
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-10">
+                        <label class="w-32 text-right">Biography</label>
+                        <div class="flex-1">
+                            <textarea name="bio" placeholder="Enter biography..." value="" class="w-full" />
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4 mt-16 pl-[10.5rem]">
+                        <button class="button"></button>
+                        <button></button>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div>
+
+                </div>
+            </div>
+        </div>
     </div>
 </main>
