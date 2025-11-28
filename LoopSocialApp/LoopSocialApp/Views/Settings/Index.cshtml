@@ -1,10 +1,10 @@
-﻿@model ApplicationUser
+﻿@model ApplicationUser;
 
-<main id="side__main" class="2xl:-[--w-side] xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
+<main id="site__main" class="2xl:ml-[--w-side] xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
     <div class="max-w-3xl mx-auto">
         <div class="box relative rounded-lg shadow-md">
             <div class="flex items-center justify-between p-6 pb-4">
-                <form id="updateProfilePictureForm" class="flex items-center gap-4 w-full" action="/" method="post">
+                <form id="updateProfilePictureForm" class="flex items-center gap-4 w-full">
                     <div class="relative w-12 h-12 shrink-0">
                         <label class="cursor-pointer">
                             <img id="imagePreview" src="@(Model.ProfileImageUrl ?? "~/images/avatar/user.png")" 
@@ -31,67 +31,84 @@
                     <button type="submit" id="saveButton" class="hidden button bg-blue-500 text-white px-4 py-1 rounded ml-auto">Save</button>
                 </form>
             </div>
-            <div>
+           
+            <div class="relative border-b">
+                <nav class="nav__underline px-6 p-0 border-transparent -mb-px">
+                    <ul class="uk-slider-items w-[calc(100%+10px)] !overflow-hidden"
+                        uk-switcher="connect: #setting_tab; animation: uk-animation-slide-right-medium, uk-animation-slide-left-medium">
 
+                        <li class="w-auto pr-2.5">
+                            <a href="#">Update Profile</a>
+                        </li>
+
+                        <li class="w-auto pr-2.5">
+                            <a href="#">Update Password</a>
+                        </li>
+
+                    </ul>
+                </nav>
             </div>
-        </div>
 
-        <div class="relative border-b">
-            <nav class="nav__underline px-6 p-0 border-transparent -mb-px">
-                <ul class="uk-slider-items w-[calc(100%+0.10px)] !overflow-hidden" 
-                    uk-switcher="connect: #setting-tab animation: uk-animation-slide-right-medium, uk-animation-slide-left-medium">
-
-                    <li class="w-auto pr-2.5">
-                        <a href="#">Update Profile</a>
-                    </li>
-
-                    <li class="w-auto pr-2.5">
-                        <a href="#">Change Password</a>
-                    </li>
-
-                </ul>
-            </nav>
-        </div>
-
-        <div id="setting_tab" class="uk-switcher py-12 px-20 overflow-hidden text-black text-sm">
-            <div>
-                <div class="space-y-6">
-                    <div class="flex items-center gap-10">
-                        <label class="w-32 text-right">Full name</label>
-                        <div class="flex-1">
-                            <input type="text" name="fullName" placeholder="Enter your full name" value="@Model.FullName" class="w-full"/>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-10">
-                        <label class="w-32 text-right">Username</label>
-                        <div class="flex-1">
-                            <input type="text" name="username" placeholder="Enter your username" value="@@tsaneff" class="w-full" />
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-10">
-                        <label class="w-32 text-right">Email</label>
-                        <div class="flex-1">
-                            <input type="email" name="emailAddress" placeholder="Enter your email address" value="" class="w-full" />
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-10">
-                        <label class="w-32 text-right">Biography</label>
-                        <div class="flex-1">
-                            <textarea name="bio" placeholder="Enter biography..." value="" class="w-full" />
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4 mt-16 pl-[10.5rem]">
-                        <button class="button"></button>
-                        <button></button>
-                    </div>
-                </div>
-            </div>
-            <div>
+            <div id="setting_tab" class="uk-switcher py-12 px-20 overflow-hidden text-black text-sm">
                 <div>
-
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-10">
+                            <label class="w-32 text-right">Full name</label>
+                            <div class="flex-1">
+                                <input type="text" name="fullName" placeholder="Enter your full name" value="@Model.FullName" class="w-full" />
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-10">
+                            <label class="w-32 text-right">Username</label>
+                            <div class="flex-1">
+                                <input type="text" name="username" placeholder="Enter your username" value="@@tsaneff" class="w-full" />
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-10">
+                            <label class="w-32 text-right">Email</label>
+                            <div class="flex-1">
+                                <input type="email" name="emailAddress" placeholder="Enter your email address" value="" class="w-full" />
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-10">
+                            <label class="w-32 text-right">Biography</label>
+                            <div class="flex-1">
+                                <textarea name="bio" placeholder="Enter biography..."></textarea>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 mt-16 pl-[10.5rem]">
+                            <button class="button px-6 bg-secondary">Cancel</button>
+                            <button type="submit" class="button px-10 bg-primary text-white">Save</button>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-10">
+                            <label class="w-32 text-right">Current password</label>
+                            <div class="flex-1">
+                                <input type="password" name="currentPassword" placeholder="Enter your current password" value="" class="w-full" />
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-10">
+                            <label class="w-32 text-right">New password</label>
+                            <div class="flex-1">
+                                <input type="password" name="newPassword" placeholder="Enter new password" value="" class="w-full" />
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-10">
+                            <label class="w-32 text-right">Confirm password</label>
+                            <div class="flex-1">
+                                <input type="password" name="confirmPassword" placeholder="Confirm your new password" value="" class="w-full" />
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 mt-16 pl-[10.5rem]">
+                            <button class="button px-6 bg-secondary">Cancel</button>
+                            <button type="submit" class="button px-10 bg-primary text-white">Save</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </div>       
     </div>
 </main>
